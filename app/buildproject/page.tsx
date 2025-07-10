@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -437,7 +437,7 @@ const copyProjectId = (id: string) => {
     })
 }
 
-export default function BuildProjectPage() {
+function BuildProjectContent() {
   const router = useRouter()
   const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([])
@@ -1256,6 +1256,14 @@ export default function BuildProjectPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function BuildProjectPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BuildProjectContent />
+    </Suspense>
   )
 }
 
