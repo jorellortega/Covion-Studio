@@ -46,6 +46,44 @@ export default function WebsiteDevelopmentPage() {
             </Button>
           </div>
         </div>
+        
+        {/* Website Development Services Grid */}
+        <div className="max-w-5xl mx-auto py-12 px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-blue-400 text-transparent bg-clip-text text-center">Our Website Development Services</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <Link href="/technology/social-platforms" className="flex flex-col items-center justify-center rounded-2xl p-8 bg-white/5 backdrop-blur-md border border-cyan-400/20 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-cyan-400/30 relative group overflow-hidden min-h-[200px] cursor-pointer">
+              <span className="text-5xl mb-4">🌐</span>
+              <span className="text-xl font-bold text-blue-50 mb-2 text-center drop-shadow-sm">Social Platforms</span>
+              <span className="text-base text-blue-100 text-center">Build large-scale platforms like Facebook, YouTube, and social networks with advanced features.</span>
+            </Link>
+            <Link href="/technology/website-modernization" className="flex flex-col items-center justify-center rounded-2xl p-8 bg-white/5 backdrop-blur-md border border-cyan-400/20 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-cyan-400/30 relative group overflow-hidden min-h-[200px] cursor-pointer">
+              <span className="text-5xl mb-4">🚀</span>
+              <span className="text-xl font-bold text-blue-50 mb-2 text-center drop-shadow-sm">Website Modernization</span>
+              <span className="text-base text-blue-100 text-center">Transform old websites with modern design, AI integration, and cutting-edge technology upgrades.</span>
+            </Link>
+            <Link href="/fullwebsitedevelopment" className="flex flex-col items-center justify-center rounded-2xl p-8 bg-white/5 backdrop-blur-md border border-cyan-400/20 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-cyan-400/30 relative group overflow-hidden min-h-[200px] cursor-pointer">
+              <span className="text-5xl mb-4">🏗️</span>
+              <span className="text-xl font-bold text-blue-50 mb-2 text-center drop-shadow-sm">Full Website Development</span>
+              <span className="text-base text-blue-100 text-center">Complete website development from design to deployment and maintenance.</span>
+            </Link>
+            <Link href="/frontenddevelopment" className="flex flex-col items-center justify-center rounded-2xl p-8 bg-white/5 backdrop-blur-md border border-cyan-400/20 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-cyan-400/30 relative group overflow-hidden min-h-[200px] cursor-pointer">
+              <span className="text-5xl mb-4">🎨</span>
+              <span className="text-xl font-bold text-blue-50 mb-2 text-center drop-shadow-sm">Frontend Development</span>
+              <span className="text-base text-blue-100 text-center">Modern, responsive user interfaces built with cutting-edge technologies.</span>
+            </Link>
+            <Link href="/backenddevelopment" className="flex flex-col items-center justify-center rounded-2xl p-8 bg-white/5 backdrop-blur-md border border-cyan-400/20 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-cyan-400/30 relative group overflow-hidden min-h-[200px] cursor-pointer">
+              <span className="text-5xl mb-4">⚙️</span>
+              <span className="text-xl font-bold text-blue-50 mb-2 text-center drop-shadow-sm">Backend Development</span>
+              <span className="text-base text-blue-100 text-center">Robust server-side development with scalable architectures and APIs.</span>
+            </Link>
+            <Link href="/technology/custom-software" className="flex flex-col items-center justify-center rounded-2xl p-8 bg-white/5 backdrop-blur-md border border-cyan-400/20 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-cyan-400/30 relative group overflow-hidden min-h-[200px] cursor-pointer">
+              <span className="text-5xl mb-4">🔧</span>
+              <span className="text-xl font-bold text-blue-50 mb-2 text-center drop-shadow-sm">Custom Software</span>
+              <span className="text-base text-blue-100 text-center">Tailored software solutions designed specifically for your business needs.</span>
+            </Link>
+          </div>
+        </div>
+
         <div className="max-w-6xl mx-auto mt-20 mb-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-blue-400 text-transparent bg-clip-text text-center">Featured Projects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

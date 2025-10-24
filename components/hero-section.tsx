@@ -42,8 +42,8 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-grid-white/10 bg-[size:60px_60px] [mask-image:radial-gradient(white,transparent_85%)]" />
       <div className="absolute inset-0 bg-gradient-radial from-purple-500/20 via-transparent to-transparent" />
       <div className="container relative z-10 mx-auto px-4 text-center">
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight gradient-text mb-6">
-          COVION STUDIO
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6">
+          Creative Multimedia & Technology
         </h1>
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <Card className="glass-effect">

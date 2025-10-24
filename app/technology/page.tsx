@@ -1,39 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Code, Cloud, Smartphone, Cpu, Brain } from "lucide-react"
 
-const technologyServices = [
-  {
-    id: 1,
-    name: "Custom Software Development",
-    description: "Tailored software solutions to meet your specific business needs.",
-  },
-  {
-    id: 2,
-    name: "Web Application Development",
-    description: "Robust and scalable web applications using cutting-edge technologies.",
-  },
-  {
-    id: 3,
-    name: "Mobile App Development",
-    description: "Native and cross-platform mobile apps for iOS and Android.",
-  },
-  {
-    id: 4,
-    name: "Cloud Solutions",
-    description: "Cloud-based services and infrastructure for improved scalability and efficiency.",
-  },
-  {
-    id: 5,
-    name: "AI and Machine Learning",
-    description: "Intelligent systems and predictive models using cutting-edge AI technologies.",
-  },
-  // Add more technology services as needed
-]
 
 const technologySpecialties = [
   { icon: <Code className="h-8 w-8 text-blue-400" />, title: "Custom Software", href: "/technology/custom-software" },
@@ -46,7 +16,7 @@ const technologySpecialties = [
 
 export default function TechnologyPage() {
   return (
-    <div className="min-h-screen bg-[#141414] text-white">
+    <div className="min-h-screen bg-[#141414] text-white pb-20">
       {/* Hero Section */}
       <div className="py-20 px-4 text-center bg-gradient-to-b from-[#141414] via-blue-900/30 to-[#141414]">
         <div className="max-w-3xl mx-auto">
@@ -98,49 +68,6 @@ export default function TechnologyPage() {
         </div>
       </div>
 
-      {/* Tabs for Services and Team */}
-      <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="services" className="mb-8">
-          <TabsList className="bg-[#232136] rounded-full p-1 flex gap-1">
-            <TabsTrigger value="services" className="rounded-full px-5 py-2 text-base data-[state=active]:bg-[#141414] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-400 data-[state=active]:bg-clip-padding data-[state=active]:border-none transition-all">Our Services</TabsTrigger>
-            <TabsTrigger value="team" className="rounded-full px-5 py-2 text-base data-[state=active]:bg-[#141414] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-400 data-[state=active]:bg-clip-padding data-[state=active]:border-none transition-all">Our Team</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="services">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {technologyServices.map((service) => (
-                <Card key={service.id} className="w-full bg-white/5 backdrop-blur-md border border-blue-400/20 shadow-xl">
-                  <CardHeader
-                    prices={[
-                      { option: "Basic", price: 5000 },
-                      { option: "Standard", price: 10000 },
-                      { option: "Premium", price: 20000 },
-                    ]}
-                    serviceName={service.name}
-                    serviceDescription={service.description}
-                  />
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="team">
-            <p className="mb-4">Our technology team consists of experienced professionals including:</p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>Full-Stack Developers</li>
-              <li>Front-End Specialists</li>
-              <li>Back-End Engineers</li>
-              <li>Mobile App Developers</li>
-              <li>Cloud Architects</li>
-              <li>DevOps Engineers</li>
-              <li>Database Administrators</li>
-              <li>Cybersecurity Specialists</li>
-              <li>AI/ML Engineers</li>
-              <li>IoT Developers</li>
-            </ul>
-          </TabsContent>
-        </Tabs>
-      </div>
 
       {/* Call to Action Card */}
       <div className="max-w-2xl mx-auto mb-10">

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
+import { supabase } from "@/lib/supabase"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -21,20 +22,48 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError("")
-    setTimeout(() => {
-      setLoading(false)
-      if (role === "user") {
-        setUser({
-          id: "user123",
-          name: email.split("@")[0] || "Demo User",
-          email,
-          role,
-        })
-    router.push("/user/dashboard")
-      } else {
-        setError("Invalid credentials (demo only)")
+    
+    try {
+      // Use real Supabase authentication
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
       }
-    }, 1000)
+
+      if (data.user) {
+        // Fetch profile data from public.users table
+        const { data: profile, error: profileError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+
+        if (profileError) {
+          console.error('Profile fetch error:', profileError)
+          setError('Login successful but profile data unavailable')
+          setLoading(false)
+          return
+        }
+
+        setUser({
+          id: data.user.id,
+          name: profile.full_name || data.user.user_metadata?.full_name || email.split("@")[0] || "User",
+          email: data.user.email,
+          phone: profile.phone,
+          role: profile.role || "user",
+        })
+        router.push("/user/dashboard")
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed')
+      setLoading(false)
+    }
   }
 
   const isLogin = true;

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext"
 import { useState, useEffect, useCallback } from "react"
+import { supabase, getUserProfile } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
@@ -179,17 +180,38 @@ export default function UserDashboard() {
   const [updates] = useState(mockUpdates)
   const [deliverables] = useState(mockDeliverables)
   const [downloadedItems, setDownloadedItems] = useState<Set<string>>(new Set())
+  const [userProfile, setUserProfile] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const abortController = new AbortController()
 
     const fetchData = async () => {
       try {
+        setLoading(true)
+        
+        // Fetch user profile from Supabase
+        if (user?.id) {
+          const { data: profile, error: profileError } = await getUserProfile(user.id)
+          
+          if (profileError) {
+            console.error('Error fetching user profile:', profileError)
+            toast({
+              title: "Error",
+              description: "Could not load user profile. Using cached data.",
+              variant: "destructive",
+            })
+          } else {
+            setUserProfile(profile)
+            console.log('User profile loaded:', profile)
+          }
+        }
+
         // Simulating API calls with setTimeout
         await new Promise((resolve) => setTimeout(resolve, 1000))
         setProjects(mockProjects)
         // Add other data fetching here if needed
-      } catch (error) {
+      } catch (error: any) {
         if (error.name === "AbortError") {
           console.log("Fetch aborted")
         } else {
@@ -200,6 +222,8 @@ export default function UserDashboard() {
             variant: "destructive",
           })
         }
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -208,7 +232,7 @@ export default function UserDashboard() {
     return () => {
       abortController.abort()
     }
-  }, [toast])
+  }, [toast, user?.id])
 
   const handleProjectClick = useCallback(
     (projectId: string) => {
@@ -257,7 +281,7 @@ export default function UserDashboard() {
     Completed: 100,
   }
   const currentProject = projects.find(p => p.id === selectedProject) || projects[0]
-  const progress = statusProgress[currentProject?.status] || 0
+  const progress = statusProgress[currentProject?.status as keyof typeof statusProgress] || 0
 
   // Status badge color mapping
   const statusBadge = {
@@ -274,17 +298,109 @@ export default function UserDashboard() {
     Completed: <CheckCircle className="inline-block mr-2 text-green-400" size={22} />,
   }
 
-  if (!user) {
-    // Optionally, you can use router.push('/login') for redirect
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-black text-white">
-        <Card className="p-8"><CardContent><h2 className="text-2xl font-bold text-center">Please log in to access your dashboard.</h2></CardContent></Card>
-      </div>
-    )
-  }
+  // Mock user for demo purposes - remove authentication check
+  const mockUser = user || { id: "mock-user", name: "Demo User", email: "demo@example.com", role: "user" }
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* User Profile Section */}
+      {userProfile && (
+        <div className="mb-8">
+          <Card className="bg-gradient-to-br from-[#0a0f1c]/80 to-[#1a1833]/80 backdrop-blur-xl border border-blue-700/40 shadow-[0_0_32px_4px_rgba(80,0,255,0.15)] rounded-2xl overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-cyan-200 flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  {userProfile.full_name?.charAt(0) || userProfile.email?.charAt(0) || 'U'}
+                </div>
+                Welcome back, {userProfile.full_name || 'User'}!
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-200 mb-3">Profile Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Email:</span>
+                      <span className="text-white">{userProfile.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Phone:</span>
+                      <span className="text-white">{userProfile.phone || 'Not provided'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Department:</span>
+                      <span className="text-white capitalize">{userProfile.department}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Role:</span>
+                      <Badge className="bg-blue-600 text-white">{userProfile.role}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Email Confirmed:</span>
+                      <span className={`${userProfile.email_confirmed ? 'text-green-400' : 'text-red-400'}`}>
+                        {userProfile.email_confirmed ? '✓ Confirmed' : '✗ Pending'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Member Since:</span>
+                      <span className="text-white">
+                        {userProfile.created_at ? new Date(userProfile.created_at).toLocaleDateString() : 'Unknown'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-200 mb-3">Account Status</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${userProfile.is_active ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                      <span className="text-white">
+                        {userProfile.is_active ? 'Active Account' : 'Inactive Account'}
+                      </span>
+                    </div>
+                    {userProfile.bio && (
+                      <div className="mt-3">
+                        <span className="text-gray-400 text-sm">Bio:</span>
+                        <p className="text-white text-sm mt-1">{userProfile.bio}</p>
+                      </div>
+                    )}
+                    {userProfile.website && (
+                      <div className="mt-3">
+                        <span className="text-gray-400 text-sm">Website:</span>
+                        <a 
+                          href={userProfile.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300 text-sm mt-1 block"
+                        >
+                          {userProfile.website}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Loading state */}
+      {loading && (
+        <div className="mb-8">
+          <Card className="bg-gradient-to-br from-[#0a0f1c]/80 to-[#1a1833]/80 backdrop-blur-xl border border-blue-700/40 rounded-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center">
+                <Loader className="h-8 w-8 animate-spin text-blue-400 mr-3" />
+                <span className="text-white">Loading your dashboard...</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+
       {/* Status bar for current project */}
       <div className="mb-8">
         <div className="relative">

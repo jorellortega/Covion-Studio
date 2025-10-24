@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
+import { signUpImmediate, supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,16 +23,43 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    setTimeout(() => {
-      setUser({
-        id: "user" + Math.floor(Math.random() * 10000),
-        name,
+    
+    try {
+      // Step 1: Create auth user first
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
-        phone,
-        role: "user",
+        password,
+        options: {
+          data: {
+            full_name: name,
+            phone: phone,
+            department: 'general',
+            role: 'user'
+          }
+        }
       })
-      router.push("/user/dashboard")
-    }, 1000)
+
+      if (authError) {
+        setError(authError.message)
+        return
+      }
+
+      if (authData.user) {
+        // The trigger automatically creates the user record in public.users
+        // No need to manually insert - the trigger handles it!
+        
+        setUser({
+          id: authData.user.id,
+          name: name,
+          email: authData.user.email,
+          phone,
+          role: "user",
+        })
+        router.push("/user/dashboard")
+      }
+    } catch (err: any) {
+      setError(err.message || 'Signup failed')
+    }
   }
 
   const isLogin = false;
