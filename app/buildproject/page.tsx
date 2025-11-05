@@ -610,16 +610,19 @@ function BuildProjectContent() {
   }
 
   const handlePayment = () => {
-    // Simulating a payment process
-    alert("Payment processing...")
+    if (!currentProject) {
+      alert("Please select or create a project first.")
+      return
+    }
 
-    // Simulating a successful payment
-    setTimeout(() => {
-      alert("Payment successful!")
-      if (currentProject) {
-        router.push(`/project/${currentProject.id}`)
-      }
-    }, 2000) // Simulating a 2-second payment process
+    const total = calculateTotalPrice()
+    if (total <= 0) {
+      alert("Please add services to your project before proceeding to payment.")
+      return
+    }
+
+    // Redirect to checkout page with project details
+    router.push(`/checkout?project_id=${currentProject.id}&amount=${total}&description=Project Payment`)
   }
 
   const handleNext = () => {

@@ -77,15 +77,15 @@ export function Navigation() {
               </Link>
               {user && (
               <Link
-                href="/user/dashboard"
+                href={user.role === 'admin' ? "/admin/dashboard" : "/user/dashboard"}
                 className={cn(
                   "inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                  pathname.startsWith("/user/dashboard")
+                  (pathname.startsWith("/user/dashboard") || pathname.startsWith("/admin/dashboard"))
                     ? "bg-white/10 text-purple-300"
                     : "text-gray-300 hover:bg-white/5 hover:text-purple-300",
                 )}
               >
-                Dashboard
+                {user.role === 'admin' ? 'Admin Dashboard' : 'Dashboard'}
               </Link>
               )}
               {user && (

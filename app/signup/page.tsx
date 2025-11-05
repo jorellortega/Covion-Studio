@@ -52,10 +52,10 @@ export default function SignUpPage() {
           id: authData.user.id,
           name: name,
           email: authData.user.email,
-          phone,
-          role: "user",
-        })
-        router.push("/user/dashboard")
+        phone,
+        role: "user",
+      })
+      router.push("/user/dashboard")
       }
     } catch (err: any) {
       setError(err.message || 'Signup failed')
