@@ -190,8 +190,8 @@ export function DepartmentGrid() {
   }
 
   return (
-    <div className="container mx-auto px-4 -mt-16 pb-12">
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-16 sm:pb-20 max-w-7xl">
+      <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card, i) => {
           const comingSoon = card.status === 'coming_soon'
           const href = card.department_slug ? `/${card.department_slug}` : '#'

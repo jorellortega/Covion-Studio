@@ -178,13 +178,12 @@ export function AskAIComponent({ autoCollapse = false }: { autoCollapse?: boolea
 
     setShowWelcome(false)
 
-    const userMessageContent = isPromptMode ? aiPrompt : initialPrompt || aiPrompt
+    // Always use the current aiPrompt value - this fixes the bug where it was using initialPrompt
+    const userMessageContent = aiPrompt.trim()
 
-    if (isPromptMode) {
-      setInitialPrompt(aiPrompt)
-      setIsPromptMode(false)
-      setAiPrompt("")
-    }
+    // Clear the input immediately
+    setAiPrompt("")
+    setIsPromptMode(false)
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -194,20 +193,21 @@ export function AskAIComponent({ autoCollapse = false }: { autoCollapse?: boolea
       status: "sent",
     }
 
+    // Build conversation history from existing messages BEFORE adding the new user message
+    // This ensures we get the correct history
+    const conversationHistory = chatMessages
+      .filter((msg) => msg.role === "user" || msg.role === "ai")
+      .map((msg) => ({
+        role: msg.role === "ai" ? "assistant" : "user",
+        content: msg.content,
+      }))
+
     // Add user message optimistically
     setChatMessages((prev) => [...prev, userMessage])
     setIsTyping(true)
 
     try {
-      // Build conversation history from existing messages (excluding welcome/system messages)
-      const conversationHistory = chatMessages
-        .filter((msg) => msg.role === "user" || msg.role === "ai")
-        .map((msg) => ({
-          role: msg.role === "ai" ? "assistant" : "user",
-          content: msg.content,
-        }))
-
-      // Call the AI chat API
+      // Call the AI chat API with the conversation history
       console.log("Getting AI response for:", userMessageContent.substring(0, 50))
       const aiResponse = await callAIChat(userMessageContent, conversationHistory)
       console.log("Received AI response:", aiResponse.substring(0, 100) + "...")
@@ -248,9 +248,6 @@ export function AskAIComponent({ autoCollapse = false }: { autoCollapse?: boolea
       setChatMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
-      if (!isPromptMode) {
-        setAiPrompt("")
-      }
       inputRef.current?.focus()
     }
   }
