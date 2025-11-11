@@ -2,18 +2,18 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
+import { supabase } from "@/lib/supabase"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MapPin, Phone, Mail, Clock, PhoneCall } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, PhoneCall, User } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
-// Remove Supabase import
-// Remove supabase-related code in handleSubmit
-// Update handleSubmit to show a success message without actual submission
+import { Badge } from "@/components/ui/badge"
 
 const departments = [
   { value: "office", label: "Office" },
@@ -28,6 +28,7 @@ const departments = [
 
 export default function ContactPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -38,18 +39,45 @@ export default function ContactPage() {
     socialMedia: "",
   })
 
+  // Auto-fill form if user is logged in
+  useEffect(() => {
+    if (user && !authLoading) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.full_name || prev.name,
+        email: user.email || prev.email,
+      }))
+    }
+  }, [user, authLoading])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
     try {
-      // Simulate form submission delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Prepare message data
+      const messageData = {
+        user_id: user?.id || null, // Link to user if logged in, null if not
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        department: formData.department || null,
+        message: formData.message,
+        social_media: formData.socialMedia || null,
+        status: 'new',
+      }
+
+      // Save to database
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert(messageData)
+
+      if (error) throw error
 
       // Reset form
       setFormData({
-        name: "",
-        email: "",
+        name: user?.full_name || "",
+        email: user?.email || "",
         phone: "",
         department: "",
         message: "",
@@ -59,13 +87,15 @@ export default function ContactPage() {
       // Show success message
       toast({
         title: "Message Sent",
-        description: "Thank you for contacting us. We'll get back to you soon!",
+        description: user 
+          ? "Thank you for contacting us! We'll reply directly to your account."
+          : "Thank you for contacting us. We'll get back to you soon!",
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending message:", error)
       toast({
         title: "Error",
-        description: "There was an error sending your message. Please try again.",
+        description: error.message || "There was an error sending your message. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -104,7 +134,15 @@ export default function ContactPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Send Us a Message</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Send Us a Message</CardTitle>
+              {user && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  Logged in as {user.full_name || user.email}
+                </Badge>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,6 +151,7 @@ export default function ContactPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
+                disabled={!!user} // Disable if logged in (auto-filled)
               />
               <Input
                 type="email"
@@ -120,6 +159,7 @@ export default function ContactPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
+                disabled={!!user} // Disable if logged in (auto-filled)
               />
               <Input
                 type="tel"

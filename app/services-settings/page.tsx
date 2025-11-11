@@ -103,10 +103,12 @@ export default function ServicesSettingsPage() {
   // Featured Projects
   const [featuredProjects, setFeaturedProjects] = useState<FeaturedProject[]>([])
   const [editingProject, setEditingProject] = useState<FeaturedProject | null>(null)
+  const [selectedProjectDepartment, setSelectedProjectDepartment] = useState<string>("all")
   
   // Services
   const [services, setServices] = useState<Service[]>([])
   const [editingService, setEditingService] = useState<Service | null>(null)
+  const [selectedServiceDepartment, setSelectedServiceDepartment] = useState<string>("all")
 
   // File upload states
   const [uploading, setUploading] = useState<string | null>(null)
@@ -1119,16 +1121,30 @@ export default function ServicesSettingsPage() {
         <TabsContent value="projects" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold">Featured Projects</h2>
-            <Button onClick={() => setEditingProject({
-              title: '',
-              media_type: 'image',
-              media_url: '',
-              status: 'active',
-              sort_order: featuredProjects.length,
-            })}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Project
-            </Button>
+            <div className="flex gap-2">
+              <Select value={selectedProjectDepartment} onValueChange={setSelectedProjectDepartment}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept.slug} value={dept.slug}>{dept.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={() => setEditingProject({
+                title: '',
+                media_type: 'image',
+                media_url: '',
+                status: 'active',
+                sort_order: featuredProjects.length,
+                department_slug: selectedProjectDepartment !== 'all' ? selectedProjectDepartment : undefined,
+              })}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Project
+              </Button>
+            </div>
           </div>
 
           {editingProject && (
@@ -1308,7 +1324,9 @@ export default function ServicesSettingsPage() {
           )}
 
           <div className="grid gap-4">
-            {featuredProjects.map((project) => (
+            {featuredProjects
+              .filter(project => selectedProjectDepartment === 'all' || project.department_slug === selectedProjectDepartment)
+              .map((project) => (
               <Card key={project.id}>
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start">
@@ -1317,13 +1335,35 @@ export default function ServicesSettingsPage() {
                         <h3 className="text-lg font-semibold">{project.title}</h3>
                         {getStatusBadge(project.status)}
                         <Badge variant="outline">{project.media_type}</Badge>
+                        {project.department_slug && (
+                          <Badge variant="secondary">
+                            {departments.find(d => d.slug === project.department_slug)?.name || project.department_slug}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-gray-400 text-sm mb-2">{project.description}</p>
                       <div className="flex gap-2 text-xs text-gray-500">
-                        <span>Dept: {project.department_slug || 'N/A'}</span>
+                        <span>Dept: {project.department_slug ? departments.find(d => d.slug === project.department_slug)?.name || project.department_slug : 'None (Global)'}</span>
                         <span>•</span>
                         <span>Order: {project.sort_order || 0}</span>
+                        {project.external_link && (
+                          <>
+                            <span>•</span>
+                            <a href={project.external_link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                              View Link
+                            </a>
+                          </>
+                        )}
                       </div>
+                      {project.media_url && (
+                        <div className="mt-2">
+                          {project.media_type === 'video' ? (
+                            <video src={project.media_url} className="w-32 h-20 object-cover rounded" controls />
+                          ) : (
+                            <img src={project.media_url} alt={project.title} className="w-32 h-20 object-cover rounded" />
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -1345,6 +1385,15 @@ export default function ServicesSettingsPage() {
                 </CardContent>
               </Card>
             ))}
+            {featuredProjects.filter(project => selectedProjectDepartment === 'all' || project.department_slug === selectedProjectDepartment).length === 0 && (
+              <Card>
+                <CardContent className="pt-6 text-center text-gray-400">
+                  {selectedProjectDepartment === 'all' 
+                    ? 'No featured projects yet. Click "Add Project" to create one.'
+                    : `No featured projects for ${departments.find(d => d.slug === selectedProjectDepartment)?.name || selectedProjectDepartment}.`}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
@@ -1352,18 +1401,31 @@ export default function ServicesSettingsPage() {
         <TabsContent value="services" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold">Services</h2>
-            <Button onClick={() => setEditingService({
-              name: '',
-              slug: '',
-              department_slug: '',
-              media_type: 'image',
-              icon_type: 'image',
-              status: 'active',
-              sort_order: services.length,
-            })}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Service
-            </Button>
+            <div className="flex gap-2">
+              <Select value={selectedServiceDepartment} onValueChange={setSelectedServiceDepartment}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept.slug} value={dept.slug}>{dept.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={() => setEditingService({
+                name: '',
+                slug: '',
+                department_slug: selectedServiceDepartment !== 'all' ? selectedServiceDepartment : '',
+                media_type: 'image',
+                icon_type: 'image',
+                status: 'active',
+                sort_order: services.length,
+              })}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Service
+              </Button>
+            </div>
           </div>
 
           {editingService && (
@@ -1607,7 +1669,9 @@ export default function ServicesSettingsPage() {
           )}
 
           <div className="grid gap-4">
-            {services.map((service) => (
+            {services
+              .filter(service => selectedServiceDepartment === 'all' || service.department_slug === selectedServiceDepartment)
+              .map((service) => (
               <Card key={service.id}>
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start">
@@ -1616,13 +1680,27 @@ export default function ServicesSettingsPage() {
                         <h3 className="text-lg font-semibold">{service.name}</h3>
                         {getStatusBadge(service.status)}
                         <Badge variant="outline">{service.media_type}</Badge>
+                        <Badge variant="secondary">
+                          {departments.find(d => d.slug === service.department_slug)?.name || service.department_slug}
+                        </Badge>
                       </div>
                       <p className="text-gray-400 text-sm mb-2">{service.description}</p>
                       <div className="flex gap-2 text-xs text-gray-500">
                         <span>Slug: {service.slug}</span>
                         <span>•</span>
-                        <span>Dept: {service.department_slug}</span>
+                        <span>Dept: {departments.find(d => d.slug === service.department_slug)?.name || service.department_slug}</span>
+                        <span>•</span>
+                        <span>Order: {service.sort_order || 0}</span>
                       </div>
+                      {service.icon_url && (
+                        <div className="mt-2">
+                          {service.icon_type === 'icon' ? (
+                            <span className="text-2xl">{service.icon_url}</span>
+                          ) : (
+                            <img src={service.icon_url} alt={service.name} className="w-16 h-16 object-cover rounded" />
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -1644,6 +1722,15 @@ export default function ServicesSettingsPage() {
                 </CardContent>
               </Card>
             ))}
+            {services.filter(service => selectedServiceDepartment === 'all' || service.department_slug === selectedServiceDepartment).length === 0 && (
+              <Card>
+                <CardContent className="pt-6 text-center text-gray-400">
+                  {selectedServiceDepartment === 'all' 
+                    ? 'No services yet. Click "Add Service" to create one.'
+                    : `No services for ${departments.find(d => d.slug === selectedServiceDepartment)?.name || selectedServiceDepartment}.`}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
       </Tabs>

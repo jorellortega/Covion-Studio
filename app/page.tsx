@@ -6,7 +6,7 @@ import { HeroSection } from "@/components/hero-section"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
+    <div className="flex min-h-screen flex-col text-white bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
       <HeroSection />
       {/* <div className="my-8 flex justify-center">
         <AskAIComponent autoCollapse />

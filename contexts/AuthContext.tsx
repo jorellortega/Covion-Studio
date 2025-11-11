@@ -27,21 +27,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for existing session on mount
     const checkSession = async () => {
       try {
-        // Get current session from Supabase
+        // Get current session from Supabase (checks localStorage automatically)
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
-        if (sessionError || !session) {
+        if (sessionError) {
+          console.error("Session error:", sessionError)
           setLoading(false)
           return
         }
 
-        // Fetch user profile from database
-        const { data: profile, error: profileError } = await getUserProfile(session.user.id)
-        
-        if (profileError || !profile) {
+        if (!session) {
+          console.log("No active session found")
           setLoading(false)
           return
         }
+
+        console.log("Session found, fetching user profile...")
+
+        // Fetch user profile from database
+        const { data: profile, error: profileError } = await getUserProfile(session.user.id)
+        
+        if (profileError) {
+          console.error("Profile fetch error:", profileError)
+          setLoading(false)
+          return
+        }
+
+        if (!profile) {
+          console.log("No profile found for user")
+          setLoading(false)
+          return
+        }
+
+        console.log("User profile loaded:", profile)
 
         // Set user in context
         setUser({

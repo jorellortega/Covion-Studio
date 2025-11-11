@@ -14,7 +14,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [role, setRole] = useState("user")
   const router = useRouter()
   const { setUser } = useAuth()
 
@@ -36,7 +35,7 @@ export default function LoginPage() {
         return
       }
 
-      if (data.user) {
+      if (data.user && data.session) {
         // Fetch profile data from public.users table
         const { data: profile, error: profileError } = await supabase
           .from('users')
@@ -51,14 +50,21 @@ export default function LoginPage() {
           return
         }
 
+        // Set user in context - role comes from database, not user input
         setUser({
           id: data.user.id,
           name: profile.full_name || data.user.user_metadata?.full_name || email.split("@")[0] || "User",
-          email: data.user.email,
-          phone: profile.phone,
-          role: profile.role || "user",
+          email: data.user.email || "",
+          phone: profile.phone || "",
+          role: profile.role || "user", // Role is always from database
         })
-        router.push("/user/dashboard")
+
+        // Redirect based on role
+        if (profile.role === 'admin') {
+          router.push("/admin/dashboard")
+        } else {
+          router.push("/user/dashboard")
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Login failed')
@@ -123,20 +129,6 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
               />
-            </div>
-            <div>
-              <Label htmlFor="role">Role</Label>
-              <select
-                id="role"
-                value={role}
-                onChange={e => setRole(e.target.value)}
-                className="w-full rounded-md border border-gray-300 bg-black text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-                <option value="manager">Manager</option>
-              </select>
             </div>
             {error && <div className="text-red-500 text-sm text-center">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>

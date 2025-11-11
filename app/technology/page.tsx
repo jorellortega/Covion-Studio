@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Code, Cloud, Smartphone, Cpu, Brain } from "lucide-react"
+import { Code, Cloud, Smartphone, Cpu, Brain, Sparkles } from "lucide-react"
 
 
 const technologySpecialties = [
@@ -12,6 +12,8 @@ const technologySpecialties = [
   { icon: <Cpu className="h-8 w-8 text-purple-400" />, title: "Web Apps", href: "/technology/web-apps" },
   { icon: <Brain className="h-8 w-8 text-pink-400" />, title: "AI & Machine Learning", href: "/technology/ai-machine-learning" },
   { icon: <Code className="h-8 w-8 text-cyan-400" />, title: "Website Development", href: "/technology/website-development" },
+  { icon: <Sparkles className="h-8 w-8 text-amber-400" />, title: "Implementing AI into Websites", href: "/technology/ai-website-integration" },
+  { icon: <Sparkles className="h-8 w-8 text-orange-400" />, title: "Implement AI into Apps", href: "/technology/ai-app-integration" },
 ]
 
 export default function TechnologyPage() {

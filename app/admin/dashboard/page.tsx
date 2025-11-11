@@ -91,11 +91,32 @@ export default function AdminDashboard() {
       icon: Settings,
     },
     {
+      title: "Careers Management",
+      description: "Manage job positions, internships, and why work here content",
+      href: "/admin/careers",
+      icon: Users,
+      color: "from-blue-600 to-indigo-600",
+    },
+    {
+      title: "Contact Messages",
+      description: "View and reply to contact form submissions",
+      href: "/admin/contact-messages",
+      icon: FileText,
+      color: "from-teal-600 to-cyan-600",
+    },
+    {
       title: "AI Settings",
-      description: "Configure AI models and manage API keys for images, audio, LLM, and video",
+      description: "Configure AI provider keys, models, and system prompts",
       href: "/admin/ai-settings",
       icon: Brain,
       color: "from-purple-600 to-pink-600",
+    },
+    {
+      title: "AI System Prompt",
+      description: "Build and customize the system prompt for Covion Intelligence",
+      href: "/admin/ai-prompt",
+      icon: Brain,
+      color: "from-indigo-600 to-purple-600",
     },
     {
       title: "Invoices",

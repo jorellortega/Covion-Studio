@@ -170,7 +170,7 @@ export function DepartmentGrid() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-12 md:py-24 bg-black">
+      <div className="container mx-auto px-4 py-12 md:py-24">
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
         </div>
@@ -180,7 +180,7 @@ export function DepartmentGrid() {
 
   if (cards.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-12 md:py-24 bg-black">
+      <div className="container mx-auto px-4 py-12 md:py-24">
         <p className="text-center text-gray-400">No departments available at the moment.</p>
         <p className="text-center text-gray-500 text-sm mt-2">
           Add cards in the Services Settings page to see them here.
@@ -190,26 +190,7 @@ export function DepartmentGrid() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24 bg-black">
-      {/* Debug Panel - Remove this in production */}
-      {process.env.NODE_ENV === 'development' && cards.length > 0 && (
-        <div className="mb-4 p-4 bg-gray-900/50 rounded-lg border border-blue-500/30 text-xs">
-          <h3 className="text-blue-400 font-bold mb-2">🐛 Debug Info:</h3>
-          <div className="space-y-1 text-gray-300">
-            <div>Total cards: {cards.length}</div>
-            {cards.map((card, idx) => (
-              <div key={card.id} className="ml-4 border-l-2 border-blue-500/30 pl-2">
-                <div className="font-semibold text-white">{idx + 1}. {card.title}</div>
-                <div>Icon Type: <span className="text-yellow-400">{card.icon_type || 'NOT SET'}</span></div>
-                <div>Icon URL: <span className="text-cyan-400 break-all">{card.icon_url || 'NONE'}</span></div>
-                <div>Thumbnail URL: <span className="text-cyan-400 break-all">{card.thumbnail_url || 'NONE'}</span></div>
-                <div>Will show hover image: <span className="text-green-400">{(card.thumbnail_url || (card.icon_type === 'image' && card.icon_url)) ? 'YES' : 'NO'}</span></div>
-                <div>Hover image URL: <span className="text-purple-400 break-all">{card.thumbnail_url || (card.icon_type === 'image' ? card.icon_url : 'N/A') || 'NONE'}</span></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+    <div className="container mx-auto px-4 -mt-16 pb-12">
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card, i) => {
           const comingSoon = card.status === 'coming_soon'
@@ -233,7 +214,7 @@ export function DepartmentGrid() {
             >
               <Link
                 href={href}
-                className={`group relative flex flex-col items-center justify-center rounded-2xl border-2 p-8 bg-white/5 backdrop-blur-md shadow-xl transition-all duration-300 ${comingSoon ? 'opacity-20 pointer-events-none' : 'hover:scale-105 hover:shadow-blue-400/30'} ${!comingSoon ? 'hover:border-gradient-to-r hover:from-blue-400 hover:to-purple-400 border-blue-900/40' : 'border-blue-900/20'}`}
+                className={`group relative flex flex-col items-center justify-center rounded-2xl border-2 p-8 bg-black backdrop-blur-md shadow-xl transition-all duration-300 ${comingSoon ? 'opacity-20 pointer-events-none' : 'hover:scale-105 hover:shadow-blue-400/30'} ${!comingSoon ? 'hover:border-gradient-to-r hover:from-blue-400 hover:to-purple-400 border-blue-900/40' : 'border-blue-900/20'}`}
                 style={{ minHeight: '220px' }}
               >
                 {/* Coming Soon Overlay */}

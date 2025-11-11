@@ -8,7 +8,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     // Disable email confirmation for immediate signup
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true, // Changed to true to detect session in URL
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined, // Explicitly use localStorage
     // This ensures users are immediately authenticated without email confirmation
     flowType: 'implicit'
   }
