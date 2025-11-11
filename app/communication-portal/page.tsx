@@ -141,6 +141,7 @@ const SelectUpdateDialog = ({
 export default function CommunicationPortal() {
   const router = useRouter()
   const { user } = useAuth()
+  const [mounted, setMounted] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [activeTab, setActiveTab] = useState("all")
@@ -162,13 +163,18 @@ export default function CommunicationPortal() {
   const [isSelectUpdateDialogOpen, setIsSelectUpdateDialogOpen] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
     const loadInitialData = async () => {
       const [fetchedMessages, fetchedDepartments] = await Promise.all([fetchMessages(filters), fetchDepartments()])
       setMessages(fetchedMessages)
       setDepartments(fetchedDepartments)
     }
     loadInitialData()
-  }, [filters])
+  }, [filters, mounted])
 
   const handleNewMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -277,6 +283,16 @@ export default function CommunicationPortal() {
       </div>
     </div>
   )
+
+  if (!mounted) {
+    return (
+      <div className="container mx-auto px-8 py-12 max-w-7xl">
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     router.push("/login")
